@@ -5,6 +5,7 @@ const state = {
   keyword: "",
   session: ""
 };
+const defaultSessions = ["6/24 剪映實戰班", "7/1 剪映實戰班"];
 
 function api(path) {
   return `${API_BASE}${path}`;
@@ -49,14 +50,23 @@ function activeRegistrations(data) {
 }
 
 function fillSessionControls(sessions) {
-  const options = sessions.map((session) => `<option value="${escapeHtml(session)}">${escapeHtml(session)}</option>`).join("");
+  const source = Array.isArray(sessions) && sessions.length ? sessions : defaultSessions;
+  const options = source.map((session) => `<option value="${escapeHtml(session)}">${escapeHtml(session)}</option>`).join("");
   document.querySelectorAll('select[name="session"]').forEach((select) => {
-    if (!select.options.length) select.innerHTML = options;
+    if (!select.options.length || select.dataset.fallback === "true") {
+      const previous = select.value;
+      select.innerHTML = options;
+      select.value = source.includes(previous) ? previous : source[0];
+      select.dataset.fallback = String(!sessions?.length);
+    }
   });
 
   const filter = document.getElementById("sessionFilter");
-  if (!filter.options.length) {
+  if (!filter.options.length || filter.dataset.fallback === "true") {
+    const previous = filter.value;
     filter.innerHTML = `<option value="">全部場次</option>${options}`;
+    filter.value = source.includes(previous) ? previous : "";
+    filter.dataset.fallback = String(!sessions?.length);
   }
 }
 
@@ -142,8 +152,10 @@ document.getElementById("sessionFilter").addEventListener("change", (event) => {
 });
 
 loadRoster().catch((error) => {
+  fillSessionControls(defaultSessions);
   document.getElementById("rosterBody").innerHTML = `<tr><td colspan="5">名單暫時無法讀取，請稍後重新整理</td></tr>`;
   setMessage("registerMessage", error.message, false);
 });
 
+fillSessionControls(defaultSessions);
 setInterval(() => loadRoster().catch(() => {}), 15000);
