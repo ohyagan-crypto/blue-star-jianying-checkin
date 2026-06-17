@@ -84,14 +84,10 @@ function renderRoster() {
   if (!data) return;
 
   const active = activeRegistrations(data);
-  const checkedIn = (data.checkins || []).filter((check) =>
-    active.some((reg) => reg.session === check.session && reg.name === check.name)
-  );
   const capacity = data.capacity || 30;
 
   document.getElementById("registeredCount").textContent = active.length;
   document.getElementById("remainingCount").textContent = Math.max(0, (data.sessions || []).length * capacity - active.length);
-  document.getElementById("checkedInCount").textContent = checkedIn.length;
   document.getElementById("exportLink").href = api("/api/export.csv");
 
   const keyword = state.keyword.trim();
@@ -101,19 +97,17 @@ function renderRoster() {
 
   const body = document.getElementById("rosterBody");
   if (!rows.length) {
-    body.innerHTML = `<tr><td colspan="6">目前沒有符合的名單</td></tr>`;
+    body.innerHTML = `<tr><td colspan="5">目前沒有符合的名單</td></tr>`;
     return;
   }
 
   body.innerHTML = rows.map((item, index) => {
-    const done = checkedIn.some((check) => check.session === item.session && check.name === item.name);
     return `
       <tr>
         <td>${index + 1}</td>
         <td>${escapeHtml(item.session)}</td>
         <td>${escapeHtml(item.name)}</td>
         <td>${escapeHtml(item.phoneLast3 || "")}</td>
-        <td><span class="pill ${done ? "done" : ""}">${done ? "已簽到" : "已報名"}</span></td>
         <td>${fmtTime(item.createdAt)}</td>
       </tr>
     `;
@@ -137,23 +131,6 @@ document.getElementById("registerForm").addEventListener("submit", async (event)
   }
 });
 
-document.getElementById("checkinForm").addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const button = event.currentTarget.querySelector("button");
-  button.disabled = true;
-  setMessage("checkinMessage", "簽到中...");
-  try {
-    const data = await postJson("/api/checkin", formData(event.currentTarget));
-    setMessage("checkinMessage", data.message || "簽到完成");
-    event.currentTarget.reset();
-    await loadRoster();
-  } catch (error) {
-    setMessage("checkinMessage", error.message, false);
-  } finally {
-    button.disabled = false;
-  }
-});
-
 document.getElementById("searchInput").addEventListener("input", (event) => {
   state.keyword = event.target.value;
   renderRoster();
@@ -165,7 +142,7 @@ document.getElementById("sessionFilter").addEventListener("change", (event) => {
 });
 
 loadRoster().catch((error) => {
-  document.getElementById("rosterBody").innerHTML = `<tr><td colspan="6">名單暫時無法讀取，請稍後重新整理</td></tr>`;
+  document.getElementById("rosterBody").innerHTML = `<tr><td colspan="5">名單暫時無法讀取，請稍後重新整理</td></tr>`;
   setMessage("registerMessage", error.message, false);
 });
 

@@ -21,14 +21,8 @@
           <a class="secondary-link" href="#roster">查看名單</a>
         </div>
       </div>
-      <div class="visual-stage" aria-label="AI 科技黑金視覺">
-        <div class="orbit orbit-one"></div>
-        <div class="orbit orbit-two"></div>
-        <div class="core-beam"></div>
-        <div class="chip">
-          <span>AI</span>
-          <small>CapCut Clone</small>
-        </div>
+      <div class="poster-stage" aria-label="剪映實戰班海報">
+        <img src="./assets/capcut-clone-poster.jpg" alt="AI CapCut Clone 黑金海報">
       </div>
     </section>
 
@@ -42,12 +36,8 @@
         <strong id="remainingCount">--</strong>
       </div>
       <div>
-        <span class="label">已簽到</span>
-        <strong id="checkedInCount">--</strong>
-      </div>
-      <div>
         <span class="label">上限</span>
-        <strong>30</strong>
+        <strong>每場 30</strong>
       </div>
     </section>
 
@@ -96,35 +86,13 @@
         <p class="message" id="registerMessage"></p>
       </article>
 
-      <article class="panel form-panel" id="checkin">
-        <div class="panel-head">
-          <h2>現場簽到</h2>
-          <p>請選場次並輸入報名姓名，手機後三碼可協助確認同名。</p>
-        </div>
-        <form id="checkinForm">
-          <label>
-            場次
-            <select name="session" required></select>
-          </label>
-          <label>
-            姓名
-            <input name="name" autocomplete="name" required placeholder="請輸入姓名">
-          </label>
-          <label>
-            手機後三碼
-            <input name="phoneLast3" inputmode="numeric" maxlength="3" placeholder="可不填">
-          </label>
-          <button type="submit">完成簽到</button>
-        </form>
-        <p class="message" id="checkinMessage"></p>
-      </article>
     </section>
 
     <section class="panel roster-panel" id="roster">
       <div class="panel-head roster-head">
         <div>
           <h2>即時名單</h2>
-          <p>名單只新增與標記簽到，不會因重複操作遺失。</p>
+          <p>名單只保留報名資料，黑金剪映場次不用簽到。</p>
         </div>
         <div class="tools">
           <select id="sessionFilter" aria-label="篩選場次"></select>
@@ -140,12 +108,11 @@
               <th>場次</th>
               <th>姓名</th>
               <th>手機後三碼</th>
-              <th>狀態</th>
               <th>報名時間</th>
             </tr>
           </thead>
           <tbody id="rosterBody">
-            <tr><td colspan="6">讀取中...</td></tr>
+            <tr><td colspan="5">讀取中...</td></tr>
           </tbody>
         </table>
       </div>

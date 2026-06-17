@@ -12,7 +12,6 @@ let writeQueue = Promise.resolve();
 
 const initialDb = {
   registrations: [],
-  checkins: [],
   cancellations: []
 };
 
@@ -34,7 +33,6 @@ function readDb() {
     const db = JSON.parse(fs.readFileSync(dbPath, "utf8"));
     return {
       registrations: Array.isArray(db.registrations) ? db.registrations : [],
-      checkins: Array.isArray(db.checkins) ? db.checkins : [],
       cancellations: Array.isArray(db.cancellations) ? db.cancellations : []
     };
   } catch {
@@ -73,7 +71,6 @@ function isCanceled(reg) {
 
 function publicDb(db) {
   const registrations = db.registrations.filter((item) => sessions.includes(item.session));
-  const checkins = db.checkins.filter((item) => sessions.includes(item.session));
   const cancellations = db.cancellations.filter((item) => sessions.includes(item.session));
   const active = registrations.filter((item) => !isCanceled(item));
   return {
@@ -81,11 +78,7 @@ function publicDb(db) {
     capacity,
     registeredCount: active.length,
     remainingCount: Math.max(0, sessions.length * capacity - active.length),
-    checkedInCount: checkins.filter((check) =>
-      active.some((reg) => reg.session === check.session && reg.name === check.name)
-    ).length,
     registrations,
-    checkins,
     cancellations
   };
 }
@@ -204,47 +197,6 @@ async function handleApi(req, res, pathname) {
     });
   }
 
-  if (req.method === "POST" && pathname === "/api/checkin") {
-    const body = await readBody(req);
-    const session = normalizeSession(body.session);
-    const name = clean(body.name);
-    const phoneLast3 = clean(body.phoneLast3).replace(/\D/g, "").slice(0, 3);
-    if (!session) return sendJson(res, 400, { success: false, message: "請選擇場次" });
-    if (!name) return sendJson(res, 400, { success: false, message: "請輸入姓名" });
-
-    const { registration, roster } = await withDbWrite((db) => {
-      const registration = db.registrations.find((item) =>
-        item.session === session &&
-        !isCanceled(item) &&
-        (item.name === name || (phoneLast3 && item.phoneLast3 === phoneLast3))
-      );
-      if (!registration) {
-        const error = new Error("找不到此報名資料，請確認場次與姓名");
-        error.status = 404;
-        throw error;
-      }
-
-      const existing = db.checkins.find((item) => item.session === session && item.name === registration.name);
-      if (!existing) {
-        db.checkins.push({
-          id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-          createdAt: now(),
-          session,
-          name: registration.name,
-          phoneLast3: registration.phoneLast3 || ""
-        });
-      }
-      return { registration, roster: publicDb(db) };
-    }).catch((error) => {
-      throw error;
-    });
-    return sendJson(res, 200, {
-      success: true,
-      message: `${registration.name} 已完成簽到`,
-      roster
-    });
-  }
-
   if (req.method === "POST" && pathname === "/api/cancel") {
     const body = await readBody(req);
     const session = normalizeSession(body.session);
@@ -281,15 +233,13 @@ async function handleApi(req, res, pathname) {
   if (req.method === "GET" && pathname === "/api/export.csv") {
     const db = publicDb(readDb());
     const rows = [
-      ["場次", "姓名", "手機後三碼", "狀態", "簽到狀態", "報名時間", "備註"],
+      ["場次", "姓名", "手機後三碼", "狀態", "報名時間", "備註"],
       ...db.registrations.map((reg) => {
-        const done = db.checkins.some((check) => check.session === reg.session && check.name === reg.name);
         return [
           reg.session,
           reg.name,
           reg.phoneLast3 || "",
           isCanceled(reg) ? "已取消" : "有效報名",
-          done ? "已簽到" : "未簽到",
           reg.createdAt || "",
           reg.note || ""
         ];
