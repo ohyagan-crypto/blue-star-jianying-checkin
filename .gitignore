@@ -1,0 +1,6 @@
+data/db.json
+*.log
+server.out.log
+server.err.log
+cloudflared-jy.out.log
+cloudflared-jy.err.log

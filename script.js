@@ -2,7 +2,8 @@ const API_BASE = String(window.JY_API_BASE || "").replace(/\/$/, "");
 
 const state = {
   roster: null,
-  keyword: ""
+  keyword: "",
+  session: ""
 };
 
 function api(path) {
@@ -33,6 +34,32 @@ function setMessage(id, text, ok = true) {
   node.dataset.ok = ok ? "true" : "false";
 }
 
+function escapeHtml(value) {
+  return String(value || "").replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  }[char]));
+}
+
+function activeRegistrations(data) {
+  return (data?.registrations || []).filter((item) => item.status !== "cancelled" && !item.cancelled);
+}
+
+function fillSessionControls(sessions) {
+  const options = sessions.map((session) => `<option value="${escapeHtml(session)}">${escapeHtml(session)}</option>`).join("");
+  document.querySelectorAll('select[name="session"]').forEach((select) => {
+    if (!select.options.length) select.innerHTML = options;
+  });
+
+  const filter = document.getElementById("sessionFilter");
+  if (!filter.options.length) {
+    filter.innerHTML = `<option value="">全部場次</option>${options}`;
+  }
+}
+
 async function postJson(path, payload) {
   const res = await fetch(api(path), {
     method: "POST",
@@ -40,7 +67,7 @@ async function postJson(path, payload) {
     body: JSON.stringify(payload)
   });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.message || "送出失敗，請稍後再試");
+  if (!res.ok || data.success === false) throw new Error(data.message || "送出失敗，請稍後再試");
   return data;
 }
 
@@ -48,43 +75,49 @@ async function loadRoster() {
   const res = await fetch(api("/api/roster"), { cache: "no-store" });
   if (!res.ok) throw new Error("名單讀取失敗");
   state.roster = await res.json();
+  fillSessionControls(state.roster.sessions || []);
   renderRoster();
 }
 
 function renderRoster() {
   const data = state.roster;
   if (!data) return;
-  document.getElementById("registeredCount").textContent = data.registeredCount;
-  document.getElementById("remainingCount").textContent = data.remainingCount;
-  document.getElementById("checkedInCount").textContent = data.checkedInCount;
+
+  const active = activeRegistrations(data);
+  const checkedIn = (data.checkins || []).filter((check) =>
+    active.some((reg) => reg.session === check.session && reg.name === check.name)
+  );
+  const capacity = data.capacity || 30;
+
+  document.getElementById("registeredCount").textContent = active.length;
+  document.getElementById("remainingCount").textContent = Math.max(0, (data.sessions || []).length * capacity - active.length);
+  document.getElementById("checkedInCount").textContent = checkedIn.length;
   document.getElementById("exportLink").href = api("/api/export.csv");
 
   const keyword = state.keyword.trim();
-  const rows = data.registrations.filter((item) => !keyword || item.name.includes(keyword));
+  const rows = active
+    .filter((item) => !state.session || item.session === state.session)
+    .filter((item) => !keyword || item.name.includes(keyword));
+
   const body = document.getElementById("rosterBody");
   if (!rows.length) {
-    body.innerHTML = `<tr><td colspan="5">目前沒有符合的名單</td></tr>`;
+    body.innerHTML = `<tr><td colspan="6">目前沒有符合的名單</td></tr>`;
     return;
   }
-  body.innerHTML = rows.map((item, index) => `
-    <tr>
-      <td>${index + 1}</td>
-      <td>${escapeHtml(item.name)}</td>
-      <td>${escapeHtml(item.phoneLast3 || "")}</td>
-      <td><span class="pill ${item.checkedIn ? "done" : ""}">${item.checkedIn ? "已簽到" : "已報名"}</span></td>
-      <td>${fmtTime(item.createdAt)}</td>
-    </tr>
-  `).join("");
-}
 
-function escapeHtml(value) {
-  return String(value).replace(/[&<>"']/g, (char) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#039;"
-  }[char]));
+  body.innerHTML = rows.map((item, index) => {
+    const done = checkedIn.some((check) => check.session === item.session && check.name === item.name);
+    return `
+      <tr>
+        <td>${index + 1}</td>
+        <td>${escapeHtml(item.session)}</td>
+        <td>${escapeHtml(item.name)}</td>
+        <td>${escapeHtml(item.phoneLast3 || "")}</td>
+        <td><span class="pill ${done ? "done" : ""}">${done ? "已簽到" : "已報名"}</span></td>
+        <td>${fmtTime(item.createdAt)}</td>
+      </tr>
+    `;
+  }).join("");
 }
 
 document.getElementById("registerForm").addEventListener("submit", async (event) => {
@@ -96,8 +129,6 @@ document.getElementById("registerForm").addEventListener("submit", async (event)
     const data = await postJson("/api/register", formData(event.currentTarget));
     setMessage("registerMessage", data.message || "報名成功");
     event.currentTarget.reset();
-    state.roster = data.roster || state.roster;
-    if (state.roster) renderRoster();
     await loadRoster();
   } catch (error) {
     setMessage("registerMessage", error.message, false);
@@ -115,8 +146,6 @@ document.getElementById("checkinForm").addEventListener("submit", async (event) 
     const data = await postJson("/api/checkin", formData(event.currentTarget));
     setMessage("checkinMessage", data.message || "簽到完成");
     event.currentTarget.reset();
-    state.roster = data.roster || state.roster;
-    if (state.roster) renderRoster();
     await loadRoster();
   } catch (error) {
     setMessage("checkinMessage", error.message, false);
@@ -130,8 +159,13 @@ document.getElementById("searchInput").addEventListener("input", (event) => {
   renderRoster();
 });
 
+document.getElementById("sessionFilter").addEventListener("change", (event) => {
+  state.session = event.target.value;
+  renderRoster();
+});
+
 loadRoster().catch((error) => {
-  document.getElementById("rosterBody").innerHTML = `<tr><td colspan="5">名單暫時無法讀取，請稍後重新整理</td></tr>`;
+  document.getElementById("rosterBody").innerHTML = `<tr><td colspan="6">名單暫時無法讀取，請稍後重新整理</td></tr>`;
   setMessage("registerMessage", error.message, false);
 });
 
