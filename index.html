@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>藍星科技｜剪映實戰班簽到系統</title>
+  <meta name="description" content="藍星科技剪映實戰班報名與簽到系統">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./config.js"></script>
+</head>
+<body>
+  <main class="app-shell">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Blue Star AI Studio</p>
+        <h1>藍星科技｜剪映實戰班</h1>
+        <p class="lead">學會剪映＋數字人克隆，打造抖音百萬觀看短視頻！</p>
+        <p class="intro">這堂課不講理論，直接教你實戰：怎麼剪、怎麼做、怎麼讓影片更有流量。</p>
+        <div class="hero-actions">
+          <a class="primary-link" href="#register">立即報名</a>
+          <a class="secondary-link" href="#checkin">現場簽到</a>
+        </div>
+      </div>
+      <div class="visual-stage" aria-label="AI 科技黑金視覺">
+        <div class="orbit orbit-one"></div>
+        <div class="orbit orbit-two"></div>
+        <div class="core-beam"></div>
+        <div class="chip">
+          <span>AI</span>
+          <small>CapCut Clone</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="status-strip" aria-live="polite">
+      <div>
+        <span class="label">報名人數</span>
+        <strong id="registeredCount">--</strong>
+      </div>
+      <div>
+        <span class="label">剩餘名額</span>
+        <strong id="remainingCount">--</strong>
+      </div>
+      <div>
+        <span class="label">已簽到</span>
+        <strong id="checkedInCount">--</strong>
+      </div>
+      <div>
+        <span class="label">上限</span>
+        <strong>30</strong>
+      </div>
+    </section>
+
+    <section class="content-grid">
+      <article class="panel course-panel">
+        <h2>課程內容</h2>
+        <ul class="feature-list">
+          <li>剪映實戰剪輯</li>
+          <li>數字人克隆教學</li>
+          <li>抖音爆款短視頻技巧</li>
+          <li>AI 自媒體內容製作</li>
+          <li>最新智能體技術分享</li>
+        </ul>
+        <div class="info-grid">
+          <p><span>時間</span>每週三 14:00～16:00（大課週不辦課程）</p>
+          <p><span>地點</span>藍星台中公司</p>
+          <p><span>費用</span>藍星同學完全免費</p>
+          <p><span>名額</span>30 位，額滿請洽工作人員</p>
+        </div>
+      </article>
+
+      <article class="panel form-panel" id="register">
+        <div class="panel-head">
+          <h2>報名</h2>
+          <p>同名或同手機後三碼會保留原資料，不會重複覆蓋。</p>
+        </div>
+        <form id="registerForm">
+          <label>
+            姓名
+            <input name="name" autocomplete="name" required placeholder="請輸入姓名">
+          </label>
+          <label>
+            手機後三碼
+            <input name="phoneLast3" inputmode="numeric" maxlength="3" placeholder="例：168">
+          </label>
+          <label>
+            備註
+            <input name="note" maxlength="80" placeholder="可填來源、同學身分或其他備註">
+          </label>
+          <button type="submit">送出報名</button>
+        </form>
+        <p class="message" id="registerMessage"></p>
+      </article>
+
+      <article class="panel form-panel" id="checkin">
+        <div class="panel-head">
+          <h2>現場簽到</h2>
+          <p>請輸入報名姓名，手機後三碼可協助確認同名。</p>
+        </div>
+        <form id="checkinForm">
+          <label>
+            姓名
+            <input name="name" autocomplete="name" required placeholder="請輸入姓名">
+          </label>
+          <label>
+            手機後三碼
+            <input name="phoneLast3" inputmode="numeric" maxlength="3" placeholder="可不填">
+          </label>
+          <button type="submit">完成簽到</button>
+        </form>
+        <p class="message" id="checkinMessage"></p>
+      </article>
+    </section>
+
+    <section class="panel roster-panel">
+      <div class="panel-head roster-head">
+        <div>
+          <h2>即時名單</h2>
+          <p>名單只新增與標記簽到，不會因重複操作遺失。</p>
+        </div>
+        <div class="tools">
+          <input id="searchInput" placeholder="搜尋姓名">
+          <a id="exportLink" class="ghost-button" href="#" target="_blank" rel="noopener">匯出名單</a>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>序號</th>
+              <th>姓名</th>
+              <th>手機後三碼</th>
+              <th>狀態</th>
+              <th>報名時間</th>
+            </tr>
+          </thead>
+          <tbody id="rosterBody">
+            <tr><td colspan="5">讀取中...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  <script src="./script.js"></script>
+</body>
+</html>
