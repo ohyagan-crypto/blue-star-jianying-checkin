@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>藍星科技｜剪映實戰班黑金報名系統</title>
-  <meta name="description" content="藍星科技剪映實戰班 6/24、7/1 場次報名與名單系統">
+  <title>藍星公司周三剪映實戰班｜報名網站</title>
+  <meta name="description" content="藍星公司周三剪映實戰班，學會剪映加數字人克隆，打造抖音百萬觀看短視頻。">
   <link rel="stylesheet" href="./styles.css">
   <script src="./config.js"></script>
 </head>
@@ -13,26 +13,41 @@
     <section class="hero">
       <div class="hero-copy">
         <p class="eyebrow">Blue Star AI Studio</p>
-        <h1>藍星科技｜剪映實戰班</h1>
+        <h1>🔥藍星公司周三剪映實戰班</h1>
         <p class="lead">學會剪映＋數字人克隆，打造抖音百萬觀看短視頻！</p>
-        <p class="intro">黑金版獨立報名系統，開放 6/24 與 7/1 兩個場次，名單可即時檢查與匯出。</p>
+        <p class="intro">這堂課不講理論，直接教你實戰：怎麼剪、怎麼做、怎麼讓影片更有流量。</p>
         <div class="session-badges" aria-label="場次">
-          <span>6/24（三）14:00-16:00</span>
-          <span>7/1（三）14:00-16:00</span>
+          <span>六月 24（三）14:00～16:00</span>
+          <span>7 月 1（三）14:00～16:00</span>
         </div>
         <div class="hero-actions">
           <a class="primary-link" href="#register">立即報名</a>
-          <a class="secondary-link" href="#roster">查看名單</a>
+          <a class="secondary-link" href="#details">查看課程內容</a>
         </div>
       </div>
-      <div class="poster-stage" aria-label="剪映實戰班海報">
-        <img src="./assets/capcut-clone-poster-v2.jpg" alt="AI CapCut Clone 黑金海報">
+      <div class="hero-panel" aria-label="課程重點">
+        <div class="hero-card">
+          <span>人數限制</span>
+          <strong>30 位，請盡快報名</strong>
+        </div>
+        <div class="hero-card">
+          <span>場次</span>
+          <strong>六月24、7月1號</strong>
+        </div>
+        <div class="hero-card">
+          <span>時間</span>
+          <strong>週三 14:00～16:00</strong>
+        </div>
+        <div class="hero-card">
+          <span>地點</span>
+          <strong>藍星台中公司</strong>
+        </div>
       </div>
     </section>
 
     <section class="status-strip" aria-live="polite">
       <div>
-        <span class="label">報名人數</span>
+        <span class="label">已報名人數</span>
         <strong id="registeredCount">--</strong>
       </div>
       <div>
@@ -41,32 +56,35 @@
       </div>
       <div>
         <span class="label">上限</span>
-        <strong>每場 30</strong>
+        <strong>每場 30 位</strong>
       </div>
     </section>
 
     <section class="content-grid">
-      <article class="panel course-panel">
+      <article class="panel course-panel" id="details">
         <h2>課程內容</h2>
+        <p class="section-note">這堂課不講理論，直接教你實戰：怎麼剪、怎麼做、怎麼讓影片更有流量。</p>
         <ul class="feature-list">
-          <li>剪映實戰剪輯</li>
+          <li>✅ 剪映實戰剪輯</li>
           <li>數字人克隆教學</li>
           <li>抖音爆款短視頻技巧</li>
           <li>AI 自媒體內容製作</li>
           <li>最新智能體技術分享</li>
         </ul>
         <div class="info-grid">
-          <p><span>場次</span>6/24（二）14:00-16:00、7/1（二）14:00-16:00</p>
+          <p><span>報名連結</span>請使用本頁下方報名表單</p>
+          <p><span>人數限制</span>30 位，請盡快報名</p>
+          <p><span>場次</span>六月24跟7月1號</p>
+          <p><span>時間</span>週三 14:00～16:00（大課週不辦課程）</p>
           <p><span>地點</span>藍星台中公司</p>
           <p><span>費用</span>藍星同學完全免費</p>
-          <p><span>名額</span>每場 30 位，額滿請洽工作人員</p>
         </div>
       </article>
 
       <article class="panel form-panel" id="register">
         <div class="panel-head">
           <h2>報名</h2>
-          <p>同場次同姓名或同手機後三碼會保留原資料，不會重複覆蓋。</p>
+          <p>想做抖音、想做自媒體，這堂一定不能錯過。</p>
         </div>
         <form id="registerForm">
           <label>
@@ -83,20 +101,19 @@
           </label>
           <label>
             備註
-            <input name="note" maxlength="80" placeholder="可填來源、同學身分或其他備註">
+            <input name="note" maxlength="80" placeholder="例：想學抖音內容、想做數字人">
           </label>
           <button type="submit">送出報名</button>
         </form>
         <p class="message" id="registerMessage"></p>
       </article>
-
     </section>
 
     <section class="panel roster-panel" id="roster">
       <div class="panel-head roster-head">
         <div>
           <h2>即時名單</h2>
-          <p>名單只保留報名資料，黑金剪映場次不用簽到。</p>
+          <p>名單只保留報名資料，方便快速查詢與匯出。</p>
         </div>
         <div class="tools">
           <select id="sessionFilter" aria-label="篩選場次"></select>
