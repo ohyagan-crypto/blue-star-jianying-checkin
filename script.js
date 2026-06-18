@@ -5,6 +5,7 @@ const state = {
   keyword: "",
   session: ""
 };
+
 const defaultSessions = ["6/24 剪映實戰班", "7/1 剪映實戰班"];
 
 function api(path) {
@@ -52,6 +53,7 @@ function activeRegistrations(data) {
 function fillSessionControls(sessions) {
   const source = Array.isArray(sessions) && sessions.length ? sessions : defaultSessions;
   const options = source.map((session) => `<option value="${escapeHtml(session)}">${escapeHtml(session)}</option>`).join("");
+
   document.querySelectorAll('select[name="session"]').forEach((select) => {
     if (!select.options.length || select.dataset.fallback === "true") {
       const previous = select.value;
@@ -111,17 +113,15 @@ function renderRoster() {
     return;
   }
 
-  body.innerHTML = rows.map((item, index) => {
-    return `
-      <tr>
-        <td>${index + 1}</td>
-        <td>${escapeHtml(item.session)}</td>
-        <td>${escapeHtml(item.name)}</td>
-        <td>${escapeHtml(item.phoneLast3 || "")}</td>
-        <td>${fmtTime(item.createdAt)}</td>
-      </tr>
-    `;
-  }).join("");
+  body.innerHTML = rows.map((item, index) => `
+    <tr>
+      <td>${index + 1}</td>
+      <td>${escapeHtml(item.session)}</td>
+      <td>${escapeHtml(item.name)}</td>
+      <td>${escapeHtml(item.phoneLast3 || "")}</td>
+      <td>${fmtTime(item.createdAt)}</td>
+    </tr>
+  `).join("");
 }
 
 document.getElementById("registerForm").addEventListener("submit", async (event) => {

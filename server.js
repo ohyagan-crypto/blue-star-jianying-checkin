@@ -158,7 +158,7 @@ async function handleApi(req, res, pathname) {
   if (req.method === "OPTIONS") return sendJson(res, 200, { ok: true });
 
   if (req.method === "GET" && pathname === "/api/health") {
-    return sendJson(res, 200, { ok: true, service: "jianying-black-gold", time: now() });
+    return sendJson(res, 200, { ok: true, service: "jianying-course-site", time: now() });
   }
 
   if (req.method === "GET" && pathname === "/api/roster") {
@@ -181,15 +181,14 @@ async function handleApi(req, res, pathname) {
         (item.name === name || (phoneLast3 && item.phoneLast3 === phoneLast3))
       );
       if (!existing && activeCount >= capacity) {
-        const error = new Error("此場次已額滿，請洽工作人員");
+        const error = new Error("此場次已額滿，請聯絡工作人員");
         error.status = 409;
         throw error;
       }
       const record = upsertRegistration(db, { session, name, phoneLast3, note });
       return { record, roster: publicDb(db) };
-    }).catch((error) => {
-      throw error;
     });
+
     return sendJson(res, 200, {
       success: true,
       message: `${record.name} 已完成 ${record.session} 報名`,
@@ -224,9 +223,8 @@ async function handleApi(req, res, pathname) {
         reason
       });
       return publicDb(db);
-    }).catch((error) => {
-      throw error;
     });
+
     return sendJson(res, 200, { success: true, message: `${name} 已取消報名`, roster });
   }
 
@@ -234,18 +232,16 @@ async function handleApi(req, res, pathname) {
     const db = publicDb(readDb());
     const rows = [
       ["場次", "姓名", "手機後三碼", "狀態", "報名時間", "備註"],
-      ...db.registrations.map((reg) => {
-        return [
-          reg.session,
-          reg.name,
-          reg.phoneLast3 || "",
-          isCanceled(reg) ? "已取消" : "有效報名",
-          reg.createdAt || "",
-          reg.note || ""
-        ];
-      })
+      ...db.registrations.map((reg) => [
+        reg.session,
+        reg.name,
+        reg.phoneLast3 || "",
+        isCanceled(reg) ? "已取消" : "有效報名",
+        reg.createdAt || "",
+        reg.note || ""
+      ])
     ];
-    return sendCsv(res, "jianying-black-gold-roster.csv", rows);
+    return sendCsv(res, "jianying-course-roster.csv", rows);
   }
 
   return sendJson(res, 404, { success: false, message: "找不到 API" });
@@ -255,7 +251,11 @@ const mime = {
   ".html": "text/html; charset=utf-8",
   ".css": "text/css; charset=utf-8",
   ".js": "application/javascript; charset=utf-8",
-  ".json": "application/json; charset=utf-8"
+  ".json": "application/json; charset=utf-8",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".svg": "image/svg+xml"
 };
 
 const server = http.createServer(async (req, res) => {
@@ -292,5 +292,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(port, "0.0.0.0", () => {
-  console.log(`剪映黑金報名系統已啟動：http://localhost:${port}`);
+  console.log(`剪映實戰班報名網站已啟動：http://localhost:${port}`);
 });
