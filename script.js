@@ -109,7 +109,7 @@ function renderRoster() {
 
   const body = document.getElementById("rosterBody");
   if (!rows.length) {
-    body.innerHTML = `<tr><td colspan="5">目前沒有符合的名單</td></tr>`;
+    body.innerHTML = `<tr><td colspan="4">目前沒有符合的名單</td></tr>`;
     return;
   }
 
@@ -118,7 +118,6 @@ function renderRoster() {
       <td>${index + 1}</td>
       <td>${escapeHtml(item.session)}</td>
       <td>${escapeHtml(item.name)}</td>
-      <td>${escapeHtml(item.phoneLast3 || "")}</td>
       <td>${fmtTime(item.createdAt)}</td>
     </tr>
   `).join("");
@@ -153,7 +152,7 @@ document.getElementById("sessionFilter").addEventListener("change", (event) => {
 
 loadRoster().catch((error) => {
   fillSessionControls(defaultSessions);
-  document.getElementById("rosterBody").innerHTML = `<tr><td colspan="5">名單暫時無法讀取，請稍後重新整理</td></tr>`;
+  document.getElementById("rosterBody").innerHTML = `<tr><td colspan="4">名單暫時無法讀取，請稍後重新整理</td></tr>`;
   setMessage("registerMessage", error.message, false);
 });
 

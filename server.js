@@ -130,11 +130,10 @@ function readBody(req) {
 function upsertRegistration(db, entry) {
   const existing = db.registrations.find((item) =>
     item.session === entry.session &&
-    (item.name === entry.name || (entry.phoneLast3 && item.phoneLast3 === entry.phoneLast3))
+    item.name === entry.name
   );
   if (existing) {
     existing.name = entry.name || existing.name;
-    existing.phoneLast3 = entry.phoneLast3 || existing.phoneLast3;
     existing.note = entry.note || existing.note;
     existing.status = "active";
     existing.cancelled = false;
@@ -169,7 +168,6 @@ async function handleApi(req, res, pathname) {
     const body = await readBody(req);
     const session = normalizeSession(body.session);
     const name = clean(body.name);
-    const phoneLast3 = clean(body.phoneLast3).replace(/\D/g, "").slice(0, 3);
     const note = clean(body.note);
     if (!session) return sendJson(res, 400, { success: false, message: "請選擇場次" });
     if (!name) return sendJson(res, 400, { success: false, message: "請輸入姓名" });
@@ -178,14 +176,14 @@ async function handleApi(req, res, pathname) {
       const activeCount = db.registrations.filter((item) => item.session === session && !isCanceled(item)).length;
       const existing = db.registrations.find((item) =>
         item.session === session &&
-        (item.name === name || (phoneLast3 && item.phoneLast3 === phoneLast3))
+        item.name === name
       );
       if (!existing && activeCount >= capacity) {
         const error = new Error("此場次已額滿，請聯絡工作人員");
         error.status = 409;
         throw error;
       }
-      const record = upsertRegistration(db, { session, name, phoneLast3, note });
+      const record = upsertRegistration(db, { session, name, note });
       return { record, roster: publicDb(db) };
     });
 
@@ -231,11 +229,10 @@ async function handleApi(req, res, pathname) {
   if (req.method === "GET" && pathname === "/api/export.csv") {
     const db = publicDb(readDb());
     const rows = [
-      ["場次", "姓名", "手機後三碼", "狀態", "報名時間", "備註"],
+      ["場次", "姓名", "狀態", "報名時間", "備註"],
       ...db.registrations.map((reg) => [
         reg.session,
         reg.name,
-        reg.phoneLast3 || "",
         isCanceled(reg) ? "已取消" : "有效報名",
         reg.createdAt || "",
         reg.note || ""
