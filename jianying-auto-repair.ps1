@@ -106,9 +106,9 @@ function Start-PublicTunnel {
 }
 
 function Publish-IfChanged {
-    $status = git -C $Root status --short
+    $status = git -C $Root status --short -- .gitignore index.html script.js styles.css config.js server.js jianying-auto-repair.ps1
     if ([string]::IsNullOrWhiteSpace(($status | Out-String))) { return "no-change" }
-    git -C $Root add .gitignore index.html script.js styles.css config.js server.js jianying-auto-repair.ps1 assets | Out-Null
+    git -C $Root add .gitignore index.html script.js styles.css config.js server.js jianying-auto-repair.ps1 | Out-Null
     git -C $Root commit -m "Keep Jianying black gold registration live" | Out-Null
     git -C $Root push origin main | Out-Null
     return "pushed"

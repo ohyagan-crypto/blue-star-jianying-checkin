@@ -134,7 +134,6 @@ function upsertRegistration(db, entry) {
   );
   if (existing) {
     existing.name = entry.name || existing.name;
-    existing.note = entry.note || existing.note;
     existing.status = "active";
     existing.cancelled = false;
     existing.updatedAt = now();
@@ -168,7 +167,6 @@ async function handleApi(req, res, pathname) {
     const body = await readBody(req);
     const session = normalizeSession(body.session);
     const name = clean(body.name);
-    const note = clean(body.note);
     if (!session) return sendJson(res, 400, { success: false, message: "請選擇場次" });
     if (!name) return sendJson(res, 400, { success: false, message: "請輸入姓名" });
 
@@ -183,7 +181,7 @@ async function handleApi(req, res, pathname) {
         error.status = 409;
         throw error;
       }
-      const record = upsertRegistration(db, { session, name, note });
+      const record = upsertRegistration(db, { session, name });
       return { record, roster: publicDb(db) };
     });
 
@@ -229,13 +227,12 @@ async function handleApi(req, res, pathname) {
   if (req.method === "GET" && pathname === "/api/export.csv") {
     const db = publicDb(readDb());
     const rows = [
-      ["場次", "姓名", "狀態", "報名時間", "備註"],
+      ["場次", "姓名", "狀態", "報名時間"],
       ...db.registrations.map((reg) => [
         reg.session,
         reg.name,
         isCanceled(reg) ? "已取消" : "有效報名",
-        reg.createdAt || "",
-        reg.note || ""
+        reg.createdAt || ""
       ])
     ];
     return sendCsv(res, "jianying-course-roster.csv", rows);
