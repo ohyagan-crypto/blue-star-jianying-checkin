@@ -125,13 +125,14 @@ function renderRoster() {
 
 document.getElementById("registerForm").addEventListener("submit", async (event) => {
   event.preventDefault();
-  const button = event.currentTarget.querySelector("button");
+  const form = event.currentTarget;
+  const button = form.querySelector("button");
   button.disabled = true;
   setMessage("registerMessage", "送出中...");
   try {
-    const data = await postJson("/api/register", formData(event.currentTarget));
+    const data = await postJson("/api/register", formData(form));
     setMessage("registerMessage", data.message || "報名成功");
-    event.currentTarget.reset();
+    form.reset();
     await loadRoster();
   } catch (error) {
     setMessage("registerMessage", error.message, false);
