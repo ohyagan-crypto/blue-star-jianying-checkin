@@ -192,6 +192,11 @@ button:disabled {
   overflow: hidden;
 }
 
+.bottom-status {
+  margin-top: 18px;
+  margin-bottom: 0;
+}
+
 .status-strip div {
   padding: 18px 20px;
   border-right: 1px solid var(--line);
