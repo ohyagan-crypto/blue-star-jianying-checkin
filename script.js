@@ -50,6 +50,36 @@ function activeRegistrations(data) {
   return (data?.registrations || []).filter((item) => item.status !== "cancelled" && !item.cancelled);
 }
 
+function renderSessionStats(sessions, active, capacity) {
+  const stats = document.getElementById("sessionStats");
+  if (!stats) return;
+
+  stats.innerHTML = sessions.map((session) => {
+    const registered = active.filter((item) => item.session === session).length;
+    const remaining = Math.max(0, capacity - registered);
+
+    return `
+      <article class="session-stat-card">
+        <span class="session-stat-title">${escapeHtml(session)}</span>
+        <div class="session-stat-values">
+          <p>
+            <span class="label">已報名人數</span>
+            <strong>${registered}</strong>
+          </p>
+          <p>
+            <span class="label">剩餘名額</span>
+            <strong>${remaining}</strong>
+          </p>
+          <p>
+            <span class="label">上限</span>
+            <strong>每場 ${capacity} 位</strong>
+          </p>
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
 function fillSessionControls(sessions) {
   const source = Array.isArray(sessions) && sessions.length ? sessions : defaultSessions;
   const options = source.map((session) => `<option value="${escapeHtml(session)}">${escapeHtml(session)}</option>`).join("");
@@ -99,8 +129,7 @@ function renderRoster() {
   const sessions = Array.isArray(data.sessions) && data.sessions.length ? data.sessions : defaultSessions;
   const capacity = data.capacity || 30;
 
-  document.getElementById("registeredCount").textContent = active.length;
-  document.getElementById("remainingCount").textContent = Math.max(0, sessions.length * capacity - active.length);
+  renderSessionStats(sessions, active, capacity);
   document.getElementById("exportLink").href = api("/api/export.csv");
 
   const keyword = state.keyword.trim();

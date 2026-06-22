@@ -205,7 +205,7 @@ button:disabled {
 
 .status-strip {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(180px, 0.38fr) minmax(0, 1fr);
   margin-bottom: 18px;
   border-radius: 8px;
   overflow: hidden;
@@ -225,6 +225,48 @@ button:disabled {
   border-right: 0;
 }
 
+.status-head {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.session-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0;
+  padding: 0;
+  border-right: 0;
+}
+
+.status-strip .session-stat-card {
+  display: grid;
+  gap: 14px;
+  padding: 18px 20px;
+  border-right: 1px solid var(--line);
+}
+
+.status-strip .session-stat-card:last-child {
+  border-right: 0;
+}
+
+.session-stat-title {
+  color: #ffe3a0;
+  font-weight: 900;
+  font-size: 1.05rem;
+  line-height: 1.35;
+}
+
+.session-stat-values {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.session-stat-values p {
+  margin: 0;
+}
+
 .label {
   display: block;
   color: var(--muted);
@@ -235,6 +277,10 @@ button:disabled {
 .status-strip strong {
   font-size: 2rem;
   color: var(--gold);
+}
+
+.session-stat-values strong {
+  font-size: clamp(1.42rem, 3.5vw, 2rem);
 }
 
 .content-grid {
@@ -483,6 +529,16 @@ td {
   }
 
   .status-strip div {
+    border-right: 0;
+  }
+
+  .session-stats,
+  .session-stat-values {
+    grid-template-columns: 1fr;
+  }
+
+  .status-strip .session-stat-card {
+    border-top: 1px solid var(--line);
     border-right: 0;
   }
 
