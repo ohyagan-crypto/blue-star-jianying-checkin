@@ -96,10 +96,11 @@ function renderRoster() {
   if (!data) return;
 
   const active = activeRegistrations(data);
+  const sessions = Array.isArray(data.sessions) && data.sessions.length ? data.sessions : defaultSessions;
   const capacity = data.capacity || 30;
 
   document.getElementById("registeredCount").textContent = active.length;
-  document.getElementById("remainingCount").textContent = Math.max(0, (data.sessions || []).length * capacity - active.length);
+  document.getElementById("remainingCount").textContent = Math.max(0, sessions.length * capacity - active.length);
   document.getElementById("exportLink").href = api("/api/export.csv");
 
   const keyword = state.keyword.trim();
@@ -113,7 +114,28 @@ function renderRoster() {
     return;
   }
 
-  body.innerHTML = rows.map((item, index) => `
+  if (state.session) {
+    body.innerHTML = renderRows(rows);
+    return;
+  }
+
+  body.innerHTML = sessions.map((session) => {
+    const sessionRows = rows.filter((item) => item.session === session);
+    const list = sessionRows.length
+      ? renderRows(sessionRows)
+      : `<tr><td colspan="4" class="empty-session">此場次目前沒有符合的名單</td></tr>`;
+
+    return `
+      <tr class="session-divider">
+        <td colspan="4">${escapeHtml(session)}｜${sessionRows.length} 人</td>
+      </tr>
+      ${list}
+    `;
+  }).join("");
+}
+
+function renderRows(rows) {
+  return rows.map((item, index) => `
     <tr>
       <td>${index + 1}</td>
       <td>${escapeHtml(item.session)}</td>

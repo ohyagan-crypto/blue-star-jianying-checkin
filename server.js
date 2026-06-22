@@ -226,15 +226,26 @@ async function handleApi(req, res, pathname) {
 
   if (req.method === "GET" && pathname === "/api/export.csv") {
     const db = publicDb(readDb());
-    const rows = [
-      ["場次", "姓名", "狀態", "報名時間"],
-      ...db.registrations.map((reg) => [
+    const rows = [];
+    sessions.forEach((session, sessionIndex) => {
+      const sessionRows = db.registrations.filter((reg) => reg.session === session);
+      if (sessionIndex > 0) rows.push([]);
+      rows.push([session]);
+      rows.push(["序號", "場次", "姓名", "狀態", "報名時間"]);
+
+      if (!sessionRows.length) {
+        rows.push(["", session, "目前沒有名單", "", ""]);
+        return;
+      }
+
+      sessionRows.forEach((reg, index) => rows.push([
+        index + 1,
         reg.session,
         reg.name,
         isCanceled(reg) ? "已取消" : "有效報名",
         reg.createdAt || ""
-      ])
-    ];
+      ]));
+    });
     return sendCsv(res, "jianying-course-roster.csv", rows);
   }
 

@@ -386,6 +386,18 @@ td {
   color: #f7f0df;
 }
 
+.session-divider td {
+  padding-top: 18px;
+  padding-bottom: 12px;
+  color: #151006;
+  background: linear-gradient(135deg, #ffdf8b, #d9901e 52%, #ffd16e);
+  font-weight: 900;
+}
+
+.empty-session {
+  color: var(--muted);
+}
+
 @media (max-width: 980px) {
   .hero,
   .content-grid {
