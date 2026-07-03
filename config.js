@@ -1,1 +1,1 @@
-﻿window.JY_API_BASE = "https://potentially-refers-september-involve.trycloudflare.com";
+window.JY_API_BASE = "https://repairs-archives-bent-rhythm.trycloudflare.com";
