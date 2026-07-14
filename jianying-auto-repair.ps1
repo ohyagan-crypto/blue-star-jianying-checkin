@@ -119,7 +119,20 @@ try {
     $base = Get-ConfiguredBase
     if (-not (Test-Backend $base)) {
         Write-Log "public backend unavailable, repairing"
-        $base = Start-PublicTunnel
+        $lastTunnelError = $null
+        for ($attempt = 1; $attempt -le 5; $attempt++) {
+            try {
+                if ($attempt -gt 1) { Write-Log "retry public tunnel attempt=$attempt" }
+                $base = Start-PublicTunnel
+                $lastTunnelError = $null
+                break
+            } catch {
+                $lastTunnelError = $_.Exception
+                Write-Log ("public tunnel attempt " + $attempt + " failed")
+                if ($attempt -lt 5) { Start-Sleep -Seconds (5 * $attempt) }
+            }
+        }
+        if ($null -ne $lastTunnelError) { throw $lastTunnelError.Message }
         Set-ConfiguredBase $base
         $publish = Publish-IfChanged
         Write-Log "repair ok public=$base publish=$publish"

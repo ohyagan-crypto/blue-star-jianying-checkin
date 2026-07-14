@@ -1,1 +1,1 @@
-window.JY_API_BASE = "https://mud-ata-maryland-lots.trycloudflare.com";
+window.JY_API_BASE = "https://whale-cincinnati-okay-thumbzilla.trycloudflare.com";
