@@ -1,1 +1,1 @@
-window.JY_API_BASE = "https://rising-entering-popular-specialist.trycloudflare.com";
+window.JY_API_BASE = "https://faces-continued-istanbul-journey.trycloudflare.com";
