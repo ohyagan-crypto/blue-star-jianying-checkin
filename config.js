@@ -1,1 +1,1 @@
-window.JY_API_BASE = "https://daily-tapes-mortality-myrtle.trycloudflare.com";
+window.JY_API_BASE = "https://spec-birds-hill-shapes.trycloudflare.com";
