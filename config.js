@@ -1,1 +1,1 @@
-window.JY_API_BASE = "https://drainage-somerset-attending-complexity.trycloudflare.com";
+window.JY_API_BASE = "https://vacuum-solved-seconds-brochures.trycloudflare.com";
