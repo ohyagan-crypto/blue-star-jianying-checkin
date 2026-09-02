@@ -1,1 +1,1 @@
-window.JY_API_BASE = "https://striking-deny-ways-humidity.trycloudflare.com";
+window.JY_API_BASE = "https://default-firm-mas-mods.trycloudflare.com";
