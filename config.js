@@ -1,1 +1,1 @@
-window.JY_API_BASE = "https://leone-pdt-tropical-illustrated.trycloudflare.com";
+window.JY_API_BASE = "https://striking-deny-ways-humidity.trycloudflare.com";
