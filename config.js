@@ -1,1 +1,1 @@
-window.JY_API_BASE = "https://default-firm-mas-mods.trycloudflare.com";
+window.JY_API_BASE = "https://pins-promptly-enter-daughter.trycloudflare.com";
